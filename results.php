@@ -1,6 +1,13 @@
 <?php
+session_start();
 include 'includes/db.php';
 include 'includes/header.php';
+
+// Check if logged in
+if(!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true){
+    header("Location: login.php");
+    exit;
+}
 
 // Check if form is submitted
 if(!isset($_POST['answers']) || !isset($_POST['category_id'])){
@@ -12,7 +19,7 @@ if(!isset($_POST['answers']) || !isset($_POST['category_id'])){
 $category_id = intval($_POST['category_id']);
 $user_answers = $_POST['answers'];
 
-// Fetch category name
+// Fetch category
 $stmt = $pdo->prepare("SELECT * FROM categories WHERE id = ?");
 $stmt->execute([$category_id]);
 $category = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -30,7 +37,7 @@ $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $total_questions = count($questions);
 $correct_count = 0;
 
-echo "<h2>Results for: " . htmlspecialchars($category['name']) . " Quiz</h2>";
+echo "<h2>Results for: " . htmlspecialchars($category['name']) . " Quiz (Code: " . htmlspecialchars($category['quiz_code']) . ")</h2>";
 
 foreach($questions as $index => $question){
     $qid = $question['id'];
@@ -54,14 +61,13 @@ foreach($questions as $index => $question){
 // Display total score
 echo "<h3>Total Score: $correct_count / $total_questions</h3>";
 
-// Optional: Save result to the database
-/*
-$stmt = $pdo->prepare("INSERT INTO results (user_name, category_id, score) VALUES (?, ?, ?)");
-$user_name = "Guest"; // You can replace with actual user login if implemented
-$stmt->execute([$user_name, $category_id, $correct_count]);
-*/
+// Save result to the database
+$user_id = $_SESSION['user_id'];
+$stmt = $pdo->prepare("INSERT INTO results (user_id, category_id, score) VALUES (?, ?, ?)");
+$stmt->execute([$user_id, $category_id, $correct_count]);
+
 ?>
 
-<a href="index.php">Back to Home</a>
+<a href="user_dashboard.php">Back to Dashboard</a>
 
 <?php include 'includes/footer.php'; ?>

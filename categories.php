@@ -1,26 +1,21 @@
 <?php
+session_start();
 include 'includes/db.php';
 include 'includes/header.php';
 
-// Fetch all categories from the database
-$stmt = $pdo->query("SELECT * FROM categories ORDER BY name");
-$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Check if logged in
+if(!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true){
+    header("Location: login.php");
+    exit;
+}
 ?>
 
-<h2>Quiz Categories</h2>
-<p>Select a category to start the quiz:</p>
+<h2>Enter Quiz Code</h2>
+<p>Enter the quiz code provided by the admin to start the quiz:</p>
 
-<div class="categories">
-    <?php if(count($categories) > 0): ?>
-        <?php foreach($categories as $category): ?>
-            <div class="category-card">
-                <h3><?php echo htmlspecialchars($category['name']); ?></h3>
-                <a href="quiz.php?category_id=<?php echo $category['id']; ?>">Start Quiz</a>
-            </div>
-        <?php endforeach; ?>
-    <?php else: ?>
-        <p>No quiz categories available at the moment.</p>
-    <?php endif; ?>
-</div>
+<form action="quiz.php" method="get">
+    <input type="text" name="code" placeholder="Quiz Code" required>
+    <input type="submit" value="Start Quiz">
+</form>
 
 <?php include 'includes/footer.php'; ?>

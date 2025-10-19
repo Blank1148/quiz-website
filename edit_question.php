@@ -3,9 +3,9 @@ session_start();
 include 'includes/db.php';
 include 'includes/header.php';
 
-// Check if admin is logged in
-if(!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true){
-    echo "<p>You must <a href='login.php'>login</a> to access this page.</p>";
+// Check if logged in and is admin
+if(!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true || $_SESSION['role'] !== 'admin'){
+    echo "<p>You must <a href='login.php'>login</a> as admin to access this page.</p>";
     include 'includes/footer.php';
     exit;
 }
@@ -19,13 +19,13 @@ if(!isset($_GET['question_id']) || empty($_GET['question_id'])){
 
 $question_id = intval($_GET['question_id']);
 
-// Fetch question
-$stmt = $pdo->prepare("SELECT * FROM questions WHERE id = ?");
+// Fetch question and check category ownership
+$stmt = $pdo->prepare("SELECT q.*, c.creator_id FROM questions q JOIN categories c ON q.category_id = c.id WHERE q.id = ?");
 $stmt->execute([$question_id]);
 $question = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if(!$question){
-    echo "<p>Question not found.</p>";
+if(!$question || $question['creator_id'] != $_SESSION['user_id']){
+    echo "<p>Question not found or you do not have permission.</p>";
     include 'includes/footer.php';
     exit;
 }

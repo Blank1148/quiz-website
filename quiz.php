@@ -1,26 +1,35 @@
 <?php
+session_start();
 include 'includes/db.php';
 include 'includes/header.php';
 
-// Check if category_id is provided
-if(!isset($_GET['category_id']) || empty($_GET['category_id'])){
-    echo "<p>Invalid category. Please go back and select a category.</p>";
+// Check if logged in
+if(!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true){
+    header("Location: login.php");
+    exit;
+}
+
+// Check if code is provided
+if(!isset($_GET['code']) || empty($_GET['code'])){
+    echo "<p>Invalid quiz code. Please enter a valid code.</p>";
     include 'includes/footer.php';
     exit;
 }
 
-$category_id = intval($_GET['category_id']);
+$code = trim($_GET['code']);
 
-// Fetch category name
-$stmt = $pdo->prepare("SELECT * FROM categories WHERE id = ?");
-$stmt->execute([$category_id]);
+// Fetch category by code
+$stmt = $pdo->prepare("SELECT * FROM categories WHERE quiz_code = ?");
+$stmt->execute([$code]);
 $category = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if(!$category){
-    echo "<p>Category not found.</p>";
+    echo "<p>Invalid quiz code.</p>";
     include 'includes/footer.php';
     exit;
 }
+
+$category_id = $category['id'];
 
 // Fetch all questions for this category
 $stmt = $pdo->prepare("SELECT * FROM questions WHERE category_id = ?");
@@ -31,7 +40,7 @@ $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $answers_stmt = $pdo->prepare("SELECT * FROM answers WHERE question_id = ?");
 ?>
 
-<h2><?php echo htmlspecialchars($category['name']); ?> Quiz</h2>
+<h2><?php echo htmlspecialchars($category['name']); ?> Quiz (Code: <?php echo htmlspecialchars($code); ?>)</h2>
 
 <?php if(count($questions) > 0): ?>
 <form action="results.php" method="post">

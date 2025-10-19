@@ -3,9 +3,9 @@ session_start();
 include 'includes/db.php';
 include 'includes/header.php';
 
-// Check admin login
-if(!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true){
-    echo "<p>You must <a href='login.php'>login</a> to access the admin panel.</p>";
+// Check if logged in and is admin
+if(!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true || $_SESSION['role'] !== 'admin'){
+    echo "<p>You must <a href='login.php'>login</a> as admin to access the admin panel.</p>";
     include 'includes/footer.php';
     exit;
 }
@@ -19,12 +19,12 @@ if(!isset($_GET['category_id']) || empty($_GET['category_id'])){
 
 $category_id = intval($_GET['category_id']);
 
-// Fetch category info
-$stmt = $pdo->prepare("SELECT * FROM categories WHERE id = ?");
-$stmt->execute([$category_id]);
+// Fetch category info and check ownership
+$stmt = $pdo->prepare("SELECT * FROM categories WHERE id = ? AND creator_id = ?");
+$stmt->execute([$category_id, $_SESSION['user_id']]);
 $category = $stmt->fetch(PDO::FETCH_ASSOC);
 if(!$category){
-    echo "<p>Category not found.</p>";
+    echo "<p>Category not found or you do not have permission.</p>";
     include 'includes/footer.php';
     exit;
 }
@@ -35,7 +35,7 @@ if(isset($_POST['add_question'])){
     $correct_answer = trim($_POST['correct_answer']);
     $options = $_POST['options']; // array of answer options
 
-    if(!empty($question_text) && !empty($correct_answer) && count($options) >= 2){
+    if(!empty($question_text) && !empty($correct_answer) && count(array_filter($options)) >= 2){
         // Insert question
         $stmt = $pdo->prepare("INSERT INTO questions (category_id, question_text, correct_answer) VALUES (?, ?, ?)");
         $stmt->execute([$category_id, $question_text, $correct_answer]);
@@ -67,7 +67,7 @@ $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
-<h2>Manage Questions for: <?php echo htmlspecialchars($category['name']); ?></h2>
+<h2>Manage Questions for: <?php echo htmlspecialchars($category['name']); ?> (Code: <?php echo htmlspecialchars($category['quiz_code']); ?>)</h2>
 <p><a href="admin.php">Back to Admin Dashboard</a></p>
 
 <h3>Add New Question</h3>

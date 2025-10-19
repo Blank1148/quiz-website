@@ -4,8 +4,12 @@ include 'includes/db.php';
 include 'includes/header.php';
 
 // Redirect if already logged in
-if(isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true){
-    header("Location: admin.php");
+if(isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true){
+    if($_SESSION['role'] === 'admin'){
+        header("Location: admin.php");
+    } else {
+        header("Location: user_dashboard.php");
+    }
     exit;
 }
 
@@ -21,9 +25,15 @@ if(isset($_POST['login'])){
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if($user && password_verify($password, $user['password'])){
-            $_SESSION['admin_logged_in'] = true;
-            $_SESSION['admin_username'] = $user['username'];
-            header("Location: admin.php");
+            $_SESSION['logged_in'] = true;
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['role'] = $user['role'];
+            if($user['role'] === 'admin'){
+                header("Location: admin.php");
+            } else {
+                header("Location: user_dashboard.php");
+            }
             exit;
         } else {
             $error = "Invalid username or password.";
@@ -34,7 +44,7 @@ if(isset($_POST['login'])){
 }
 ?>
 
-<h2>Admin Login</h2>
+<h2>Login</h2>
 
 <?php if($error): ?>
 <p style="color:red;"><?php echo $error; ?></p>
@@ -51,5 +61,7 @@ if(isset($_POST['login'])){
     </p>
     <input type="submit" name="login" value="Login">
 </form>
+
+<p>Don't have an account? <a href="register.php">Register here</a>.</p>
 
 <?php include 'includes/footer.php'; ?>
