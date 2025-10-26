@@ -40,6 +40,85 @@ $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $answers_stmt = $pdo->prepare("SELECT * FROM answers WHERE question_id = ?");
 ?>
 
+<style>
+    /* Quiz Page Specific Styles */
+    form {
+        background-color: #fff;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .question-block {
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: #f9f9f9;
+    }
+
+    .question-block p {
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+    }
+
+    .question-block div {
+        margin: 0.5rem 0;
+    }
+
+    .question-block input[type="radio"] {
+        margin-right: 0.5rem;
+    }
+
+    .question-block label {
+        font-size: 1rem;
+        color: #34495e;
+    }
+
+    form input[type="submit"] {
+        background-color: #3498db;
+        color: #fff;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.3s;
+        display: block;
+        margin: 2rem auto 0;
+    }
+
+    form input[type="submit"]:hover {
+        background-color: #2980b9;
+    }
+
+    hr {
+        border: 0;
+        border-top: 1px solid #ddd;
+        margin: 1rem 0;
+    }
+
+    p {
+        margin-bottom: 1rem;
+        font-size: 1rem;
+        color: #34495e;
+        text-align: center;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        form {
+            padding: 1rem;
+        }
+
+        .question-block {
+            padding: 0.8rem;
+        }
+    }
+</style>
+
 <h2><?php echo htmlspecialchars($category['name']); ?> Quiz (Code: <?php echo htmlspecialchars($code); ?>)</h2>
 
 <?php if(count($questions) > 0): ?>

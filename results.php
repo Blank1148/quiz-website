@@ -37,8 +37,88 @@ $questions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $total_questions = count($questions);
 $correct_count = 0;
 
-echo "<h2>Results for: " . htmlspecialchars($category['name']) . " Quiz (Code: " . htmlspecialchars($category['quiz_code']) . ")</h2>";
+?>
 
+<style>
+    /* Results Page Specific Styles */
+    .question-block {
+        background-color: #fff;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+    }
+
+    .question-block p {
+        margin-bottom: 0.5rem;
+        color: #34495e;
+    }
+
+    .question-block p strong {
+        font-weight: bold;
+    }
+
+    p[style*="color:red"] {
+        background-color: #ffe6e6;
+        padding: 0.8rem;
+        border-radius: 4px;
+        text-align: center;
+    }
+
+    p[style*="color:green"] {
+        background-color: #e6ffed;
+        padding: 0.8rem;
+        border-radius: 4px;
+        text-align: center;
+    }
+
+    hr {
+        border: 0;
+        border-top: 1px solid #ddd;
+        margin: 1rem 0;
+    }
+
+    h3 {
+        color: #34495e;
+        margin: 1.5rem 0 1rem;
+        font-size: 1.4rem;
+        text-align: center;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-top: 1rem;
+        padding: 0.6rem 1.2rem;
+        background-color: #3498db;
+        color: #fff;
+        border-radius: 4px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+    }
+
+    .back-link:hover {
+        background-color: #2980b9;
+        text-decoration: none;
+    }
+
+    p {
+        margin-bottom: 1rem;
+        font-size: 1rem;
+        color: #34495e;
+        text-align: center;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .question-block {
+            padding: 1rem;
+        }
+    }
+</style>
+
+<h2>Results for: <?php echo htmlspecialchars($category['name']); ?> Quiz (Code: <?php echo htmlspecialchars($category['quiz_code']); ?>)</h2>
+
+<?php
 foreach($questions as $index => $question){
     $qid = $question['id'];
     $correct_answer = $question['correct_answer'];
@@ -65,9 +145,8 @@ echo "<h3>Total Score: $correct_count / $total_questions</h3>";
 $user_id = $_SESSION['user_id'];
 $stmt = $pdo->prepare("INSERT INTO results (user_id, category_id, score) VALUES (?, ?, ?)");
 $stmt->execute([$user_id, $category_id, $correct_count]);
-
 ?>
 
-<a href="user_dashboard.php">Back to Dashboard</a>
+<a href="user_dashboard.php" class="back-link">Back to Dashboard</a>
 
 <?php include 'includes/footer.php'; ?>

@@ -5,7 +5,7 @@ include 'includes/header.php';
 
 // Check if logged in and is admin
 if(!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true || $_SESSION['role'] !== 'admin'){
-    echo "<p>You must <a href='login.php'>login</a> as admin to access the admin panel.</p>";
+    echo "<p style='color:red;'>You must <a href='login.php'>login</a> as admin to access the admin panel.</p>";
     include 'includes/footer.php';
     exit;
 }
@@ -58,8 +58,118 @@ $stmt->execute([$_SESSION['user_id']]);
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
+<style>
+    /* Admin Page Specific Styles */
+    form {
+        background-color: #fff;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        margin: 0 auto 2rem;
+    }
+
+    form input[type="text"] {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+    }
+
+    form input[type="text"]:focus {
+        border-color: #3498db;
+        outline: none;
+    }
+
+    form input[type="submit"] {
+        background-color: #3498db;
+        color: #fff;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.3s;
+    }
+
+    form input[type="submit"]:hover {
+        background-color: #2980b9;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+        background-color: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    th, td {
+        padding: 0.8rem;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #34495e;
+        color: #fff;
+        font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    td a {
+        color: #3498db;
+        margin-right: 0.5rem;
+    }
+
+    td a:hover {
+        text-decoration: underline;
+    }
+
+    p[style*="color:red"] {
+        background-color: #ffe6e6;
+        padding: 0.8rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    p[style*="color:green"] {
+        background-color: #e6ffed;
+        padding: 0.8rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        form {
+            padding: 1rem;
+        }
+
+        table {
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 0.5rem;
+        }
+    }
+</style>
+
 <h2>Admin Dashboard</h2>
-<p><a href="logout.php">Logout</a></p>
 
 <h3>Add New Category</h3>
 <form method="post" action="">
@@ -68,7 +178,7 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </form>
 
 <h3>Your Categories</h3>
-<table border="1" cellpadding="5" cellspacing="0">
+<table>
     <tr>
         <th>ID</th>
         <th>Name</th>
