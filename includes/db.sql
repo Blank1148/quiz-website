@@ -54,7 +54,7 @@ CREATE TABLE results (
 -- 6️⃣ DEFAULT ADMIN USER (password = admin123)
 INSERT INTO users (username, password, role) VALUES (
     'admin',
-    '$2y$10$u7NfLwqKp6A3yYvUf2eOeO5vHhOTpN7OQ8fhc6bkzC3YhWq7p7Z5a',
+    '$2y$10$/iRIfUtLuE0lYghFutiqgOQatpcxkwpX9MbFhSyScY3gnsb0seKue',
     'admin'
 );
 
